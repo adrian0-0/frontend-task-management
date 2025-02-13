@@ -13,7 +13,7 @@ const instance = axios.create({
  * Interceptor para adicionar o token nos requests
  */
 instance.interceptors.request.use((request: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem("acessToken");
+  const token = localStorage.getItem("accessToken");
   if (token) {
     request.headers.Authorization = `Bearer ${token}`;
   }
@@ -31,14 +31,14 @@ const refreshToken = async () => {
     }
 
     const response = await instance.post<{
-      acessToken: string;
+      accessToken: string;
       refreshToken: string;
     }>("/auth/refresh", { refreshToken });
 
-    localStorage.setItem("acessToken", response.data.acessToken);
+    localStorage.setItem("accessToken", response.data.accessToken);
     localStorage.setItem("refreshToken", response.data.refreshToken);
 
-    return response.data.acessToken;
+    return response.data.accessToken;
   } catch (error) {
     console.error("Erro ao renovar token:", error);
     localStorage.removeItem("accessToken");
