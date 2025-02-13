@@ -8,6 +8,17 @@ export interface IFindAllTasks {
   alreadyFinished: string;
 }
 
+export interface IModalTableData {
+  id: string;
+  name: string;
+}
+
+export interface IModalTableContent {
+  editText: string;
+  createText: string;
+  path: string;
+}
+
 export enum Status {
   OPEN = "OPEN",
   IN_PROGRESS = "IN_PROGRESS",

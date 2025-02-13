@@ -5,35 +5,55 @@ import {
   Status,
   StatusSeverity,
   StatusLabel,
+  IModalTableData,
+  IModalTableContent,
 } from "@/interfaces/tasks";
 import { findAllTasks } from "@/services/tasks";
-import {
-  Box,
-  Chip,
-  CircularProgress,
-  Paper,
-  TableCell,
-  TableFooter,
-  TablePagination,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import MUIDataTable from "mui-datatables";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
-import { PendingActions, Groups3, CheckCircle } from "@mui/icons-material";
+import {
+  PendingActions,
+  Groups3,
+  CheckCircle,
+  AddCircle,
+} from "@mui/icons-material";
+import DataTables from "../components/dataTables";
+import RealTimeWidthView from "../components/realTimeWidthView";
+import TableModal from "../components/tableModal/page";
 
 const Tasks = () => {
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isTasks, setTasks] = useState<IFindAllTasks[]>([]);
-  const [isViewWidth, setViewWidth] = useState(0);
+  const [isModalData, setModalData] = useState<IModalTableData[]>([]);
+  const [isModalContent, setModalContent] = useState<IModalTableContent>({
+    editText: "",
+    createText: "",
+    path: "",
+  });
   const router = useRouter();
   const mobileWidth = 600;
+  const { isViewWidth } = RealTimeWidthView();
+  const taskContent = {
+    title: "Lista de tarefas",
+    path: "tasks",
+    editName: "editTasks",
+    editLabel: "Editar Tarefa",
+  };
+
+  const handleModal = (
+    modalData: IModalTableData[],
+    content: IModalTableContent
+  ) => {
+    setModalData(modalData);
+    setModalContent(content);
+    setModalOpen(true);
+  };
 
   const columns = [
     {
       name: "id",
-      label: "ID",
+      label: "ID da Tarefa",
       options: {
         filter: false,
         display: false,
@@ -51,6 +71,136 @@ const Tasks = () => {
         display: isViewWidth > mobileWidth ? true : false,
       },
     },
+    {
+      name: "stockpileId",
+      label: "Id do Objeto",
+      options: {
+        filter: false,
+        display: false,
+      },
+    },
+    {
+      name: "stockpileName",
+      label: "Objeto(s) em transporte",
+      options: {
+        filter: isViewWidth > mobileWidth ? true : false,
+        display: isViewWidth > mobileWidth ? true : false,
+        customBodyRender: (value: any, tableMeta: { rowData: any[] }) => {
+          const stockpileIdValue =
+            tableMeta.rowData[
+              columns.findIndex((col) => col.name === "stockpileId")
+            ];
+          const stockpileIds = stockpileIdValue
+            ? stockpileIdValue.split("\n")
+            : [];
+          const stockpiles = value
+            ? value.split("\n").map((name: any, index: any) => ({
+                name,
+                id: stockpileIds[index],
+              }))
+            : [];
+          const content = {
+            editText: "Editar objeto em estoque",
+            createText: "Adcionar objeto ao estoque",
+            path: "stockpile",
+          };
+          switch (value) {
+            case null:
+              return (
+                <Button
+                  startIcon={<AddCircle></AddCircle>}
+                  variant="text"
+                  onClick={() => {
+                    router.push("/stockpile/create");
+                  }}
+                >
+                  Adcionar
+                </Button>
+              );
+          }
+          return (
+            <Box>
+              <Button
+                onClick={() => handleModal(stockpiles, content)}
+                variant="text"
+                sx={{ width: "max-content" }}
+              >
+                Ver mais
+              </Button>
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "employeeId",
+      label: "ID do Funcionário",
+      options: {
+        filter: false,
+        display: false,
+        customBodyRender: (value: any) => {
+          return (
+            <Box component={"span"} className="break-line">
+              {value}
+            </Box>
+          );
+        },
+      },
+    },
+    {
+      name: "employeeName",
+      label: "Funcionário(s) Encarregado(s)",
+      options: {
+        customBodyRender: (value: any, tableMeta: { rowData: any[] }) => {
+          const employeeIdValue =
+            tableMeta.rowData[
+              columns.findIndex((col) => col.name === "employeeId")
+            ];
+          const employeeIds = employeeIdValue
+            ? employeeIdValue.split("\n")
+            : [];
+          const employees = value
+            ? value.split("\n").map((name: any, index: any) => ({
+                name,
+                id: employeeIds[index],
+              }))
+            : [];
+
+          const content = {
+            path: "employee",
+            editText: "Editar funcionário",
+            createText: "Adcionar funcionário",
+          };
+
+          switch (value) {
+            case null:
+              return (
+                <Button
+                  startIcon={<AddCircle></AddCircle>}
+                  variant="text"
+                  onClick={() => {
+                    router.push("/employee/create");
+                  }}
+                >
+                  Adcionar
+                </Button>
+              );
+          }
+          return (
+            <Box>
+              <Button
+                onClick={() => handleModal(employees, content)}
+                variant="text"
+                sx={{ width: "max-content" }}
+              >
+                Ver mais
+              </Button>
+            </Box>
+          );
+        },
+      },
+    },
+
     {
       name: "status",
       label: "Status",
@@ -109,131 +259,7 @@ const Tasks = () => {
     },
   ];
 
-  const options = {
-    responsive: "standard",
-    filterType: "checkbox",
-    jumpToPage: true,
-    selectableRows: false,
-    print: isViewWidth > mobileWidth ? true : false,
-    filter: isViewWidth > mobileWidth ? true : false,
-    download: isViewWidth > mobileWidth ? true : false,
-    rowsPerPageOptions: [5, 10, 25, 50],
-
-    textLabels: {
-      body: {
-        noMatch: "Nenhum dado encontrado",
-        toolTip: "Ordenar",
-      },
-      pagination: {
-        next: "Próxima Página",
-        previous: "Página Anterior",
-        rowsPerPage: "Linhas por página:",
-        displayRows: "de",
-        jumpToPage: "",
-      },
-      toolbar: {
-        search: "Buscar",
-        downloadCsv: "Baixar CSV",
-        print: "Imprimir",
-        viewColumns: "Ver Colunas",
-        filterTable: "Filtrar Tabela",
-      },
-      filter: {
-        all: "Todos",
-        title: "Filtros",
-        reset: "Resetar",
-      },
-      viewColumns: {
-        title: "Mostrar Colunas",
-        titleAria: "Mostrar/Esconder Colunas",
-      },
-      selectedRows: {
-        text: "linha(s) selecionada(s)",
-        delete: "Deletar",
-        deleteAria: "Deletar linhas selecionadas",
-      },
-    },
-  };
-
-  const getMuiTheme = () =>
-    createTheme({
-      components: {
-        MuiPaper: {
-          styleOverrides: {
-            root: {
-              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-            },
-          },
-        },
-        MuiTableCell: {
-          defaultProps: {
-            padding: "normal",
-          },
-          styleOverrides: {
-            root: {
-              "&.MuiTableCell-footer": {
-                backgroundColor: "#f4f4f4", // Cor de fundo
-                padding: "0rem", // Espaçamento interno
-                textAlign: "center", // Centralizar o conteúdo
-              },
-              boxShadow: "none",
-
-              "@media (max-width: 600px)": {
-                magin: "1rem",
-                fontSize: "0.75rem",
-              },
-            },
-            head: {
-              "@media (max-width: 600px)": {
-                fontSize: "0.8rem",
-                fontWeight: "bold",
-              },
-            },
-            body: {
-              "@media (max-width: 600px)": {
-                whiteSpace: "nowrap",
-              },
-            },
-            sizeSmall: {
-              padding: "6px",
-            },
-          },
-        },
-        MuiTypography: {
-          styleOverrides: {
-            h5: {
-              textAlign: "center",
-              fontWeight: "bold",
-              "@media (max-width: 600px)": {
-                fontSize: "1.25rem",
-              },
-            },
-          },
-        },
-        MuiTablePagination: {
-          styleOverrides: {
-            root: {
-              backgroundColor: "#f4f4f4", // Altera o fundo da paginação
-              padding: "10px",
-            },
-            toolbar: {
-              display: "flex",
-              justifyContent: "center", // Centraliza a paginação
-            },
-            selectLabel: {
-              fontSize: "14px",
-              color: "#333",
-            },
-          },
-        },
-      },
-    });
-
   useEffect(() => {
-    const handleResize = async () => setViewWidth(window.innerWidth);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
     findAllTasks()
       .then((response: any) => {
         const tasksWithTranslatedStatus = response.data.map((task: any) => ({
@@ -248,10 +274,6 @@ const Tasks = () => {
           router.push("auth/signin");
         }
       });
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, []);
 
   return (
@@ -261,34 +283,22 @@ const Tasks = () => {
       justifyContent={"center"}
       alignItems={"center"}
       textAlign={"center"}
-      margin={{ xs: "1rem", md: "2rem", lg: "5rem" }}
+      marginX={"1rem"}
       flexWrap={"wrap"}
     >
       <Box width="100%" height={"100%"} marginTop={"1rem"}>
-        {isTasks.length > 0 ? (
-          <ThemeProvider theme={getMuiTheme()}>
-            <MUIDataTable
-              title={
-                <Typography
-                  variant="h5"
-                  display={"flex"}
-                  justifyContent={{ xs: "center", lg: "left" }}
-                >
-                  Lista de Tarefas
-                </Typography>
-              }
-              data={isTasks}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        ) : (
-          //             <Paper elevation={1} sx={{ padding: { xs: "0rem", lg: "2rem" } }}>
-
-          // </Paper>
-          <CircularProgress />
-        )}
+        <DataTables
+          data={isTasks}
+          columns={columns}
+          content={taskContent}
+        ></DataTables>
       </Box>
+      <TableModal
+        isOpen={isModalOpen}
+        setOpen={setModalOpen}
+        data={isModalData}
+        content={isModalContent}
+      ></TableModal>
     </Box>
   );
 };
