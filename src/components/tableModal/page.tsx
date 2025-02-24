@@ -22,7 +22,12 @@ interface Modal {
 const TableModal: React.FC<Modal> = ({ isOpen, setOpen, data, content }) => {
   const router = useRouter();
   return (
-    <Dialog scroll="paper" open={isOpen} onClose={() => setOpen(false)}>
+    <Dialog
+      scroll="paper"
+      open={isOpen}
+      closeAfterTransition={false}
+      onClose={() => setOpen(false)}
+    >
       <DialogContent
         sx={{
           position: "relative",

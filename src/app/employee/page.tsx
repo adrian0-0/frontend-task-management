@@ -2,8 +2,8 @@
 
 import { Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import DataTables from "../components/dataTables";
-import RealTimeWidthView from "../components/realTimeWidthView";
+import DataTables from "@/components/dataTables";
+import RealTimeWidthView from "@/components/realTimeWidthView";
 import { IFindAllEmployee } from "@/interfaces/employee";
 import { findAllEmployee } from "@/services/employee";
 import { useRouter } from "next/navigation";
@@ -52,6 +52,22 @@ const Employee = () => {
         filter: isViewWidth > mobileWidth ? true : false,
         display: isViewWidth > mobileWidth ? true : false,
       },
+    },
+    {
+      name: "totalTasks",
+      label: "Total de tarefas",
+    },
+    {
+      name: "tasksOpen",
+      label: "Tarefas em aberto",
+    },
+    {
+      name: "tasksInprogress",
+      label: "Tarefas em progresso",
+    },
+    {
+      name: "tasksDone",
+      label: "Tarefas concluídas",
     },
   ];
 

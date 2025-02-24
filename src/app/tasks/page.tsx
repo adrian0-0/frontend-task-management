@@ -7,6 +7,7 @@ import {
   StatusLabel,
   IModalTableData,
   IModalTableContent,
+  getIcon,
 } from "@/interfaces/tasks";
 import { findAllTasks } from "@/services/tasks";
 import { Box, Button, Chip } from "@mui/material";
@@ -18,9 +19,9 @@ import {
   CheckCircle,
   AddCircle,
 } from "@mui/icons-material";
-import DataTables from "../components/dataTables";
-import RealTimeWidthView from "../components/realTimeWidthView";
-import TableModal from "../components/tableModal/page";
+import DataTables from "@/components/dataTables";
+import RealTimeWidthView from "@/components/realTimeWidthView";
+import TableModal from "@/components/tableModal/page";
 
 const Tasks = () => {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -38,7 +39,7 @@ const Tasks = () => {
     title: "Lista de tarefas",
     path: "tasks",
     editName: "editTasks",
-    editLabel: "Editar Tarefa",
+    editLabel: "Editar",
   };
 
   const handleModal = (
@@ -86,19 +87,20 @@ const Tasks = () => {
         filter: isViewWidth > mobileWidth ? true : false,
         display: isViewWidth > mobileWidth ? true : false,
         customBodyRender: (value: any, tableMeta: { rowData: any[] }) => {
-          const stockpileIdValue =
-            tableMeta.rowData[
-              columns.findIndex((col) => col.name === "stockpileId")
-            ];
-          const stockpileIds = stockpileIdValue
-            ? stockpileIdValue.split("\n")
-            : [];
-          const stockpiles = value
-            ? value.split("\n").map((name: any, index: any) => ({
-                name,
-                id: stockpileIds[index],
-              }))
-            : [];
+          const getColumnIndexByName = (columns: any, name: any) =>
+            columns.findIndex((col: any) => col.name === name);
+
+          const stockpileIdIndex =
+            getColumnIndexByName(columns, "stockpileId") + 1;
+          const stockpileId = tableMeta.rowData[stockpileIdIndex];
+          const splitValue = value ? value.split("\n") : [];
+          const splitStockpileId = stockpileId ? stockpileId.split("\n") : [];
+          const modalValue = splitStockpileId.map(
+            (id: string, index: number) => ({
+              id: id,
+              name: splitValue[index],
+            })
+          );
           const content = {
             editText: "Editar objeto em estoque",
             createText: "Adcionar objeto ao estoque",
@@ -121,7 +123,7 @@ const Tasks = () => {
           return (
             <Box>
               <Button
-                onClick={() => handleModal(stockpiles, content)}
+                onClick={() => handleModal(modalValue, content)}
                 variant="text"
                 sx={{ width: "max-content" }}
               >
@@ -151,20 +153,21 @@ const Tasks = () => {
       name: "employeeName",
       label: "Funcionário(s) Encarregado(s)",
       options: {
-        customBodyRender: (value: any, tableMeta: { rowData: any[] }) => {
-          const employeeIdValue =
-            tableMeta.rowData[
-              columns.findIndex((col) => col.name === "employeeId")
-            ];
-          const employeeIds = employeeIdValue
-            ? employeeIdValue.split("\n")
-            : [];
-          const employees = value
-            ? value.split("\n").map((name: any, index: any) => ({
-                name,
-                id: employeeIds[index],
-              }))
-            : [];
+        customBodyRender: (value: any, tableMeta: any) => {
+          const getColumnIndexByName = (columns: any, name: any) =>
+            columns.findIndex((col: any) => col.name === name);
+
+          const employeeIdIndex =
+            getColumnIndexByName(columns, "employeeId") + 1;
+          const employeeId = tableMeta.rowData[employeeIdIndex];
+          const splitValue = value ? value.split("\n") : [];
+          const splitEmployeeId = employeeId ? employeeId.split("\n") : [];
+          const modalValue = splitEmployeeId.map(
+            (id: string, index: number) => ({
+              id: id,
+              name: splitValue[index],
+            })
+          );
 
           const content = {
             path: "employee",
@@ -189,7 +192,7 @@ const Tasks = () => {
           return (
             <Box>
               <Button
-                onClick={() => handleModal(employees, content)}
+                onClick={() => handleModal(modalValue, content)}
                 variant="text"
                 sx={{ width: "max-content" }}
               >
@@ -200,26 +203,12 @@ const Tasks = () => {
         },
       },
     },
-
     {
       name: "status",
       label: "Status",
       options: {
         customBodyRender: (value: any) => {
-          let icon;
-          switch (value) {
-            case StatusLabel.OPEN:
-              icon = <PendingActions fontSize="small" />;
-              break;
-            case StatusLabel.IN_PROGRESS:
-              icon = <Groups3 fontSize="small" />;
-              break;
-            case StatusLabel.DONE:
-              icon = <CheckCircle fontSize="small" />;
-              break;
-            default:
-              icon = <PendingActions fontSize="small" />;
-          }
+          const icon = getIcon(value);
           return (
             <Chip
               color={StatusSeverity[value as keyof typeof StatusSeverity]}
@@ -254,7 +243,8 @@ const Tasks = () => {
       options: {
         filter: isViewWidth > mobileWidth ? true : false,
         display: isViewWidth > mobileWidth ? true : false,
-        customBodyRender: (value: string) => new Date(value).toLocaleString(),
+        customBodyRender: (value: string) =>
+          value ? new Date(value).toLocaleString() : "",
       },
     },
   ];

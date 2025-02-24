@@ -2,7 +2,7 @@ import "../styles/global.css";
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
-import Dashboard from "./components/dashboard";
+import Dashboard from "@/components/dashboard";
 import Provider from "./provider";
 
 const inter = Inter({

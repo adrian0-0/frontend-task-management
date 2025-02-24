@@ -1,5 +1,9 @@
 "use client";
 
+import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IFindOneTask } from "@/interfaces/tasks";
+import { editTask, findOneTask } from "@/services/tasks";
+import { ArrowBack } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -9,27 +13,22 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import dayjs from "dayjs";
 import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
-import utc from "dayjs/plugin/utc";
-import dayjs, { Dayjs } from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import { createTask } from "@/services/tasks";
-import { IAlertResonse, Severity } from "@/interfaces/response";
-import { ArrowBack } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-const CreateTask = () => {
+const EditTask = () => {
+  const [isTask, setTask] = useState<IFindOneTask>();
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isAlert, setAlert] = useState<IAlertResonse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",
   });
+  const searchParam = useSearchParams();
+  const id = searchParam.get("id") ?? "";
   const router = useRouter();
   const theme = useTheme();
   const {
@@ -43,25 +42,25 @@ const CreateTask = () => {
     expectedToFinish: Yup.date().required(
       "O prazo de finalização é obrigatório"
     ),
+    alreadyFinished: Yup.string().optional().nullable(),
   });
 
   const handleService = (values: any) => {
-    createTask(values)
+    editTask(id, values)
       .then((response: any) => {
         setAlert({
           statusCode: response.statusCode,
-          severity: Severity.SUCESS,
           message: response.message,
+          severity: Severity.SUCESS,
         });
+        setOpen(true);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setAlert({
           statusCode: err.response.data.statusCode,
           message: err.response.data.message,
           severity: Severity.ERROR,
         });
-      })
-      .finally(() => {
         setOpen(true);
       });
   };
@@ -69,6 +68,12 @@ const CreateTask = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    findOneTask(id).then((response: any) => {
+      setTask(response.data);
+    });
+  }, [id]);
 
   return (
     <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
@@ -89,15 +94,21 @@ const CreateTask = () => {
           >
             Retornar
           </Button>
-          <Typography variant="h5" fontWeight={"600"} marginBottom={"1rem"}>
-            Criar Tarefa
+          <Typography variant="h5" fontWeight={"600"} marginBottom={"1.5rem"}>
+            Editar Tarefa
           </Typography>
           <Formik
+            enableReinitialize
             initialValues={{
-              title: "",
-              description: "",
-              createdAt: "",
-              expectedToFinish: "",
+              title: isTask?.title,
+              description: isTask?.description,
+              createdAt: dayjs(isTask?.createdAt).format("YYYY-MM-DDTHH:mm"),
+              expectedToFinish: dayjs(isTask?.expectedToFinish).format(
+                "YYYY-MM-DDTHH:mm"
+              ),
+              alreadyFinished: dayjs(isTask?.alreadyFinished).isValid()
+                ? dayjs(isTask?.alreadyFinished).format("YYYY-MM-DDTHH:mm")
+                : null,
             }}
             validationSchema={validationSchema}
             onSubmit={async (values) => {
@@ -112,6 +123,7 @@ const CreateTask = () => {
                     name="title"
                     label="Nome"
                     placeholder="Nome da tarefa"
+                    defaultValue={isTask?.title}
                     type="text"
                     fullWidth
                     slotProps={{
@@ -130,6 +142,7 @@ const CreateTask = () => {
                     name="description"
                     label="Descrição"
                     placeholder="Descrição da tarefa"
+                    defaultValue={isTask?.description}
                     type={"text"}
                     multiline
                     rows={4}
@@ -151,6 +164,10 @@ const CreateTask = () => {
                     id="createdAt"
                     name="createdAt"
                     label="Data de criação"
+                    defaultValue={
+                      isTask?.createdAt &&
+                      dayjs(isTask?.createdAt).format("YYYY-MM-DDTHH:mm")
+                    }
                     type={"datetime-local"}
                     slotProps={{
                       inputLabel: {
@@ -170,6 +187,10 @@ const CreateTask = () => {
                     id="expectedToFinish"
                     name="expectedToFinish"
                     label="Previsão de finalização"
+                    defaultValue={
+                      isTask?.expectedToFinish &&
+                      dayjs(isTask?.expectedToFinish).format("YYYY-MM-DDTHH:mm")
+                    }
                     type={"datetime-local"}
                     slotProps={{
                       inputLabel: {
@@ -185,6 +206,31 @@ const CreateTask = () => {
                     error={
                       touched.expectedToFinish &&
                       Boolean(errors.expectedToFinish)
+                    }
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    id="alreadyFinished"
+                    name="alreadyFinished"
+                    label="Data de conclusão"
+                    defaultValue={
+                      isTask?.alreadyFinished &&
+                      dayjs(isTask?.alreadyFinished).format("YYYY-MM-DDTHH:mm")
+                    }
+                    type={"datetime-local"}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                    fullWidth
+                    helperText={
+                      touched.alreadyFinished && errors.alreadyFinished
+                        ? errors.alreadyFinished
+                        : null
+                    }
+                    error={
+                      touched.alreadyFinished && Boolean(errors.alreadyFinished)
                     }
                     onChange={handleChange}
                   />
@@ -223,4 +269,4 @@ const CreateTask = () => {
   );
 };
 
-export default CreateTask;
+export default EditTask;

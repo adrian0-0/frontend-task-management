@@ -61,7 +61,6 @@ const SignUp = () => {
         setAlertClose(true);
       })
       .catch((err) => {
-        console.log(err);
         setAlertResponse({
           statusCode: err.statusCode,
           message: err.message,

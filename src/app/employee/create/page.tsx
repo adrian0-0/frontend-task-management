@@ -1,34 +1,45 @@
 "use client";
-
+import React, { useEffect, useState } from "react";
+import * as Yup from "yup";
 import {
   Alert,
   Box,
   Button,
+  FormControl,
+  FormHelperText,
+  Input,
+  InputLabel,
   Snackbar,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
 import { Form, Formik } from "formik";
-import React, { useState } from "react";
-import * as Yup from "yup";
-import utc from "dayjs/plugin/utc";
-import dayjs, { Dayjs } from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import { createTask } from "@/services/tasks";
+import { IMaskInput } from "react-imask";
+import { createEmployee } from "@/services/employee";
 import { IAlertResonse, Severity } from "@/interfaces/response";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-const CreateTask = () => {
+const employeeCreate = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isAlert, setAlert] = useState<IAlertResonse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",
+  });
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Nome é obrigatório"),
+    role: Yup.string().required("Cargo é obrigatório"),
+    email: Yup.string()
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+\.(com)$/,
+        "O email não é valido"
+      )
+      .required("O email é obrigatório."),
+    phone: Yup.string()
+      .matches(/^\+55 \(\d{2}\) \d{5}-\d{4}$/, "Número de celular não é válido")
+      .required("O telefone é obrigatório"),
   });
   const router = useRouter();
   const theme = useTheme();
@@ -36,17 +47,8 @@ const CreateTask = () => {
     palette: { mode: isTheme },
   } = theme;
 
-  const validationSchema = Yup.object({
-    title: Yup.string().required("O nome é obrigatório."),
-    description: Yup.string().optional(),
-    createdAt: Yup.date().required("A data de criação é obrigatória"),
-    expectedToFinish: Yup.date().required(
-      "O prazo de finalização é obrigatório"
-    ),
-  });
-
   const handleService = (values: any) => {
-    createTask(values)
+    createEmployee(values)
       .then((response: any) => {
         setAlert({
           statusCode: response.statusCode,
@@ -70,6 +72,23 @@ const CreateTask = () => {
     setOpen(false);
   };
 
+  const phoneMask = React.forwardRef<HTMLInputElement>(
+    function TextMaskCustom(props, ref) {
+      const { ...other } = props;
+      return (
+        <IMaskInput
+          {...other}
+          mask="{+55} (00) 00000-0000"
+          definitions={{
+            "#": /[1-9]/,
+          }}
+          inputRef={ref}
+          overwrite
+        />
+      );
+    }
+  );
+
   return (
     <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
       <Box width={"100%"}>
@@ -85,19 +104,19 @@ const CreateTask = () => {
             variant="outlined"
             onClick={() => router.back()}
             startIcon={<ArrowBack></ArrowBack>}
-            sx={{ marginBottom: "1rem" }}
+            sx={{ width: "min-content", marginBottom: "1rem" }}
           >
             Retornar
           </Button>
-          <Typography variant="h5" fontWeight={"600"} marginBottom={"1rem"}>
-            Criar Tarefa
+          <Typography variant="h5" fontWeight={"600"} marginBottom={"1.5rem"}>
+            Adcionar Funcionário
           </Typography>
           <Formik
             initialValues={{
-              title: "",
-              description: "",
-              createdAt: "",
-              expectedToFinish: "",
+              name: "",
+              role: "",
+              email: "",
+              phone: "",
             }}
             validationSchema={validationSchema}
             onSubmit={async (values) => {
@@ -108,11 +127,11 @@ const CreateTask = () => {
               <Form onSubmit={handleSubmit}>
                 <Box display={"flex"} flexWrap={"wrap"} gap={"1.5rem"}>
                   <TextField
-                    id="title"
-                    name="title"
+                    id="name"
+                    name="name"
                     label="Nome"
-                    placeholder="Nome da tarefa"
                     type="text"
+                    placeholder="Seu nome completo"
                     fullWidth
                     slotProps={{
                       inputLabel: {
@@ -120,19 +139,17 @@ const CreateTask = () => {
                       },
                     }}
                     helperText={
-                      touched.title && errors.title ? errors.title : null
+                      touched.name && errors.name ? errors.name : null
                     }
-                    error={touched.title && Boolean(errors.title)}
+                    error={touched.name && Boolean(errors.name)}
                     onChange={handleChange}
                   />
                   <TextField
-                    id="description"
-                    name="description"
-                    label="Descrição"
-                    placeholder="Descrição da tarefa"
+                    id="role"
+                    name="role"
+                    label="Cargo"
+                    placeholder="Administrador"
                     type={"text"}
-                    multiline
-                    rows={4}
                     fullWidth
                     slotProps={{
                       inputLabel: {
@@ -140,53 +157,49 @@ const CreateTask = () => {
                       },
                     }}
                     helperText={
-                      touched.description && errors.description
-                        ? errors.description
-                        : null
+                      touched.role && errors.role ? errors.role : null
                     }
-                    error={touched.description && Boolean(errors.description)}
+                    error={touched.role && Boolean(errors.role)}
                     onChange={handleChange}
                   />
                   <TextField
-                    id="createdAt"
-                    name="createdAt"
-                    label="Data de criação"
-                    type={"datetime-local"}
+                    id="email"
+                    name="email"
+                    label="E-mail"
+                    placeholder="email@gmail.com"
+                    type={"email"}
+                    fullWidth
                     slotProps={{
                       inputLabel: {
                         shrink: true,
                       },
                     }}
-                    fullWidth
                     helperText={
-                      touched.createdAt && errors.createdAt
-                        ? errors.createdAt
-                        : null
+                      touched.email && errors.email ? errors.email : null
                     }
-                    error={touched.createdAt && Boolean(errors.createdAt)}
+                    error={touched.email && Boolean(errors.email)}
                     onChange={handleChange}
                   />
                   <TextField
-                    id="expectedToFinish"
-                    name="expectedToFinish"
-                    label="Previsão de finalização"
-                    type={"datetime-local"}
+                    id="phone"
+                    variant="outlined"
+                    name="phone"
+                    label="Número de celular"
+                    placeholder="+55 (99) 99999-9999"
+                    fullWidth
+                    onChange={handleChange}
+                    helperText={
+                      touched?.phone && errors?.phone ? errors.phone : null
+                    }
+                    error={touched?.phone && Boolean(errors?.phone)}
                     slotProps={{
+                      input: {
+                        inputComponent: phoneMask as any,
+                      },
                       inputLabel: {
                         shrink: true,
                       },
                     }}
-                    fullWidth
-                    helperText={
-                      touched.expectedToFinish && errors.expectedToFinish
-                        ? errors.expectedToFinish
-                        : null
-                    }
-                    error={
-                      touched.expectedToFinish &&
-                      Boolean(errors.expectedToFinish)
-                    }
-                    onChange={handleChange}
                   />
                 </Box>
                 <Button
@@ -223,4 +236,4 @@ const CreateTask = () => {
   );
 };
 
-export default CreateTask;
+export default employeeCreate;

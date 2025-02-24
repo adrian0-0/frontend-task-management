@@ -1,7 +1,7 @@
 "use client";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import Dashboard from "./components/dashboard";
+import Dashboard from "@/components/dashboard";
 import { extendTheme } from "@mui/material/styles";
 
 const Provider = ({ children }: { children: React.ReactNode }) => {
