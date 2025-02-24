@@ -1,5 +1,12 @@
 "use client";
-
+import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IEditStockpile } from "@/interfaces/stockpile";
+import {
+  createStockpile,
+  editStockpile,
+  findOneStockpile,
+} from "@/services/stockpile";
+import { ArrowBack } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -10,26 +17,20 @@ import {
   useTheme,
 } from "@mui/material";
 import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
-import utc from "dayjs/plugin/utc";
-import dayjs, { Dayjs } from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import { createTask } from "@/services/tasks";
-import { IAlertResonse, Severity } from "@/interfaces/response";
-import { ArrowBack } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-const CreateTask = () => {
+const EditStockpile = () => {
+  const [isStockpile, setStockpile] = useState<IEditStockpile>();
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isAlert, setAlert] = useState<IAlertResonse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",
   });
+  const searchParam = useSearchParams();
+  const id = searchParam.get("id") ?? "";
   const router = useRouter();
   const theme = useTheme();
   const {
@@ -37,16 +38,13 @@ const CreateTask = () => {
   } = theme;
 
   const validationSchema = Yup.object({
-    title: Yup.string().required("O nome é obrigatório."),
+    name: Yup.string().required("Nome é obrigatório"),
+    quant: Yup.number().required("Quantidade é obrigatório"),
     description: Yup.string().optional(),
-    createdAt: Yup.date().required("A data de criação é obrigatória"),
-    expectedToFinish: Yup.date().required(
-      "O prazo de finalização é obrigatório"
-    ),
   });
 
   const handleService = (values: any) => {
-    createTask(values)
+    editStockpile(id, values)
       .then((response: any) => {
         setAlert({
           statusCode: response.statusCode,
@@ -70,9 +68,15 @@ const CreateTask = () => {
     setOpen(false);
   };
 
+  useEffect(() => {
+    findOneStockpile(id).then((response: any) => {
+      setStockpile(response.data);
+    });
+  }, [id]);
+
   return (
     <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
-      <Box width={"100%"}>
+      <Box width={{ sx: "100%", lg: "80%" }}>
         <Box
           sx={{
             marginX: { xs: "1rem", md: "3rem", lg: "5rem" },
@@ -85,19 +89,19 @@ const CreateTask = () => {
             variant="outlined"
             onClick={() => router.back()}
             startIcon={<ArrowBack></ArrowBack>}
-            sx={{ marginBottom: "1rem" }}
+            sx={{ marginBottom: "1rem", width: "min-content" }}
           >
             Retornar
           </Button>
           <Typography variant="h5" fontWeight={"600"} marginBottom={"1rem"}>
-            Criar Tarefa
+            Adcionar objeto ao estoque
           </Typography>
           <Formik
+            enableReinitialize
             initialValues={{
-              title: "",
-              description: "",
-              createdAt: "",
-              expectedToFinish: "",
+              name: isStockpile?.name,
+              quant: isStockpile?.quant,
+              description: isStockpile?.description ?? "",
             }}
             validationSchema={validationSchema}
             onSubmit={async (values) => {
@@ -108,10 +112,11 @@ const CreateTask = () => {
               <Form onSubmit={handleSubmit}>
                 <Box display={"flex"} flexWrap={"wrap"} gap={"1.5rem"}>
                   <TextField
-                    id="title"
-                    name="title"
+                    id="name"
+                    name="name"
                     label="Nome"
-                    placeholder="Nome da tarefa"
+                    placeholder="Nome do objeto"
+                    defaultValue={isStockpile?.name}
                     type="text"
                     fullWidth
                     slotProps={{
@@ -120,17 +125,37 @@ const CreateTask = () => {
                       },
                     }}
                     helperText={
-                      touched.title && errors.title ? errors.title : null
+                      touched.name && errors.name ? errors.name : null
                     }
-                    error={touched.title && Boolean(errors.title)}
+                    error={touched.name && Boolean(errors.name)}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    id="quant"
+                    name="quant"
+                    label="Quantidade"
+                    placeholder="Quantidade de objetos"
+                    defaultValue={isStockpile?.quant}
+                    type="number"
+                    fullWidth
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                    helperText={
+                      touched.quant && errors.quant ? errors.quant : null
+                    }
+                    error={touched.quant && Boolean(errors.quant)}
                     onChange={handleChange}
                   />
                   <TextField
                     id="description"
                     name="description"
                     label="Descrição"
-                    placeholder="Descrição da tarefa"
-                    type={"text"}
+                    placeholder="Descrição da pilha de estoque"
+                    defaultValue={isStockpile?.description}
+                    type="text"
                     multiline
                     rows={4}
                     fullWidth
@@ -145,47 +170,6 @@ const CreateTask = () => {
                         : null
                     }
                     error={touched.description && Boolean(errors.description)}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    id="createdAt"
-                    name="createdAt"
-                    label="Data de criação"
-                    type={"datetime-local"}
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    fullWidth
-                    helperText={
-                      touched.createdAt && errors.createdAt
-                        ? errors.createdAt
-                        : null
-                    }
-                    error={touched.createdAt && Boolean(errors.createdAt)}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    id="expectedToFinish"
-                    name="expectedToFinish"
-                    label="Previsão de finalização"
-                    type={"datetime-local"}
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    fullWidth
-                    helperText={
-                      touched.expectedToFinish && errors.expectedToFinish
-                        ? errors.expectedToFinish
-                        : null
-                    }
-                    error={
-                      touched.expectedToFinish &&
-                      Boolean(errors.expectedToFinish)
-                    }
                     onChange={handleChange}
                   />
                 </Box>
@@ -223,4 +207,4 @@ const CreateTask = () => {
   );
 };
 
-export default CreateTask;
+export default EditStockpile;

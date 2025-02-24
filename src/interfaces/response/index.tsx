@@ -13,6 +13,6 @@ export interface IAlertResonse {
 export enum Severity {
   SUCESS = "success",
   ERROR = "error",
-  WARINING = "warning",
+  WARNING = "warning",
   INFO = "info",
 }

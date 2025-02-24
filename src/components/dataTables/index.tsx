@@ -191,7 +191,7 @@ const DataTables: React.FC<DataTablesProps> = ({ data, columns, content }) => {
           return (
             <IconButton
               color="primary"
-              onClick={() => router.push(`/${content.path}/${id}`)}
+              onClick={() => router.push(`/${content.path}/info?id=${id}`)}
             >
               <EditNote></EditNote>
             </IconButton>

@@ -1,12 +1,13 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { Box, Chip } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import DataTables from "../components/dataTables";
-import RealTimeWidthView from "../components/realTimeWidthView";
+import DataTables from "@/components/dataTables";
+import RealTimeWidthView from "@/components/realTimeWidthView";
 import { IFindAllStockpile } from "@/interfaces/stockpile";
 import { findAllStockpile } from "@/services/stockpile";
 import { useRouter } from "next/navigation";
+import { getIcon, StatusLabel, StatusSeverity } from "@/interfaces/tasks";
 
 const Stockpile = () => {
   const [isStockpile, setStockpile] = useState<IFindAllStockpile[]>([]);
@@ -17,7 +18,7 @@ const Stockpile = () => {
     title: "Objetos no estoque",
     path: "stockpile",
     editName: "editStockpile",
-    editLabel: "Editar Objeto",
+    editLabel: "Editar Inventário",
   };
 
   const columns = [
@@ -45,11 +46,50 @@ const Stockpile = () => {
         display: isViewWidth > mobileWidth ? true : false,
       },
     },
+    {
+      name: "quant",
+      label: "Quantidade",
+    },
+    {
+      name: "taskTitle",
+      label: "Tarefa",
+    },
+    {
+      name: "taskStatus",
+      label: "Status da Tarefa",
+      options: {
+        customBodyRender: (value: any) => {
+          const icon = getIcon(value);
+          switch (value) {
+            case null:
+              return null;
+            default:
+              return (
+                <Chip
+                  color={StatusSeverity[value as keyof typeof StatusSeverity]}
+                  icon={icon}
+                  label={value}
+                />
+              );
+          }
+        },
+      },
+    },
   ];
 
   useEffect(() => {
     findAllStockpile()
-      .then((response: any) => setStockpile(response.data))
+      .then((response: any) => {
+        const stockpileWithTranslatedStatus = response.data.map(
+          (stockpile: any) => ({
+            ...stockpile,
+            taskStatus:
+              StatusLabel[stockpile.taskStatus as keyof typeof StatusLabel] ||
+              stockpile.taskStatus,
+          })
+        );
+        setStockpile(stockpileWithTranslatedStatus);
+      })
       .catch(() => router.push("/auth/signin"));
   }, []);
 

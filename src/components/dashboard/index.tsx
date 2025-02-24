@@ -4,7 +4,7 @@ import { extendTheme } from "@mui/material/styles";
 import LayersIcon from "@mui/icons-material/Layers";
 import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { PageContainer } from "@toolpad/core";
 import {
   HomeWork,
@@ -26,6 +26,7 @@ import {
   IconButton,
   Modal,
   Paper,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { findUser } from "@/services/user";
@@ -61,13 +62,24 @@ function userAccount(
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
   router: AppRouterInstance
 ) {
+  const [size, setSize] = useState({ width: 0 });
+  const boxRef = useRef();
+
   const loggout = () => {
     localStorage.clear();
     router.push("/auth/signin");
   };
 
+  useEffect(() => {
+    const observer: any = new ResizeObserver(([entry]) =>
+      setSize(entry.contentRect)
+    );
+    observer.observe(boxRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <Box>
+    <Box ref={boxRef}>
       <Divider sx={{ marginX: "0.5rem" }}></Divider>
       <Box
         display={"flex"}
@@ -75,17 +87,24 @@ function userAccount(
         gap={"1rem"}
         padding={"1rem"}
         alignItems={"center"}
+        justifyContent={size.width < 300 ? "center" : "inherit"}
       >
-        <Person
-          sx={{
-            fontSize: "3rem",
-            borderColor: "inherit",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderRadius: "100%",
-          }}
-        ></Person>
-        <Box>
+        <Tooltip title={isUser.name}>
+          <IconButton>
+            <Person
+              sx={{
+                maxWidth: "3rem",
+                fontSize: "2.5rem",
+                borderColor: "inherit",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderRadius: "100%",
+              }}
+            ></Person>
+          </IconButton>
+        </Tooltip>
+
+        <Box display={size.width < 300 ? "none" : "normal"}>
           <Typography> {isUser.name}</Typography>
           <Typography>{isUser.email}</Typography>
         </Box>
@@ -158,6 +177,9 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
   });
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isPath, setPath] = useState<string>("");
+  const expandMenuButton = document.querySelector('[aria-label="Expand menu"]');
+  const isMenuExpanded = expandMenuButton !== null;
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(isMenuExpanded);
   const router = useRouter();
 
   const theme = extendTheme({
