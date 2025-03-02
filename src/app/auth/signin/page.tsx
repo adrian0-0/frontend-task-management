@@ -14,13 +14,13 @@ import {
 import { signIn } from "@/services/auth";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IAlertResponse, Severity } from "@/interfaces/response";
 import { useRouter } from "next/navigation";
 
 const SignIn = () => {
   const [isPasswordHidden, setPasswordHidden] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
-  const [isAlertResponse, setAlertResponse] = useState<IAlertResonse>({
+  const [isAlertResponse, setAlertResponse] = useState<IAlertResponse>({
     statusCode: 200,
     message: "",
     severity: Severity.INFO,

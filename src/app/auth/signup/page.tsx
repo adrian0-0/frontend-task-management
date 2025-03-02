@@ -1,6 +1,6 @@
 "use client";
 
-import { IAlertResonse, IResponse, Severity } from "@/interfaces/response";
+import { IAlertResponse, IResponse, Severity } from "@/interfaces/response";
 import { ISignup } from "@/interfaces/signup";
 import { signUp } from "@/services/auth";
 import {
@@ -22,7 +22,7 @@ import * as Yup from "yup";
 
 const SignUp = () => {
   const [isPasswordHidden, setPasswordHidden] = useState<boolean>(false);
-  const [isAlertResponse, setAlertResponse] = useState<IAlertResonse>({
+  const [isAlertResponse, setAlertResponse] = useState<IAlertResponse>({
     statusCode: 200,
     message: "",
     severity: Severity.INFO,

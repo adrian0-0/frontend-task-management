@@ -4,7 +4,7 @@ export interface IResponse<T> {
   data?: T;
 }
 
-export interface IAlertResonse {
+export interface IAlertResponse {
   statusCode: number;
   message: string;
   severity: Severity;

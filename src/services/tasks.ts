@@ -21,3 +21,21 @@ export const findOneTask = async (id: string) => {
 export const editTask = async (id: string, data: IEditTask) => {
   return await api.patch<IEditTask>(`/tasks/${id}`, data);
 };
+
+export const attachEmployeesToTask = async (id: string, employeesId: []) => {
+  return await api.post<{ employeesId: [] }>(
+    `/tasks/employee/${id}`,
+    employeesId
+  );
+};
+
+export const removeEmployeesFromTask = async (
+  id: string,
+  employeeId: string
+) => {
+  return await api.delete(`/tasks/employee/${id}/${employeeId}`);
+};
+
+export const deleteTask = async (id: string) => {
+  return await api.delete(`/tasks/${id}`);
+};

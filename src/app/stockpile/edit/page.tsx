@@ -1,5 +1,5 @@
 "use client";
-import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IAlertResponse, Severity } from "@/interfaces/response";
 import { IEditStockpile } from "@/interfaces/stockpile";
 import {
   createStockpile,
@@ -24,7 +24,7 @@ import * as Yup from "yup";
 const EditStockpile = () => {
   const [isStockpile, setStockpile] = useState<IEditStockpile>();
   const [isOpen, setOpen] = useState<boolean>(false);
-  const [isAlert, setAlert] = useState<IAlertResonse>({
+  const [isAlert, setAlert] = useState<IAlertResponse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",

@@ -21,3 +21,7 @@ export const createStockpile = async (data: ICreateStockpile) => {
 export const editStockpile = async (id: string, data: IEditStockpile) => {
   return await api.patch<IEditStockpile>(`/stockpile/${id}`, data);
 };
+
+export const deleteStockpile = async (id: string) => {
+  return await api.delete(`/stockpile/${id}`);
+};

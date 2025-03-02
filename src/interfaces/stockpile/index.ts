@@ -30,7 +30,8 @@ export interface ICreateStockpile {
 }
 
 export interface IEditStockpile {
-  name: string;
-  description: string;
-  quant: string;
+  taskId?: string | null;
+  name?: string;
+  description?: string;
+  quant?: string;
 }

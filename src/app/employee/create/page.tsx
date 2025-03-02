@@ -17,13 +17,13 @@ import {
 import { Form, Formik } from "formik";
 import { IMaskInput } from "react-imask";
 import { createEmployee } from "@/services/employee";
-import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IAlertResponse, Severity } from "@/interfaces/response";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
 const employeeCreate = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
-  const [isAlert, setAlert] = useState<IAlertResonse>({
+  const [isAlert, setAlert] = useState<IAlertResponse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",

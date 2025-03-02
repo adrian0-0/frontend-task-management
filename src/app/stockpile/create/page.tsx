@@ -1,5 +1,5 @@
 "use client";
-import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IAlertResponse, Severity } from "@/interfaces/response";
 import { createStockpile } from "@/services/stockpile";
 import { ArrowBack } from "@mui/icons-material";
 import {
@@ -18,7 +18,7 @@ import * as Yup from "yup";
 
 const CreateStockpile = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
-  const [isAlert, setAlert] = useState<IAlertResonse>({
+  const [isAlert, setAlert] = useState<IAlertResponse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",
