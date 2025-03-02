@@ -16,7 +16,7 @@ import utc from "dayjs/plugin/utc";
 import dayjs, { Dayjs } from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { createTask } from "@/services/tasks";
-import { IAlertResonse, Severity } from "@/interfaces/response";
+import { IAlertResponse, Severity } from "@/interfaces/response";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
@@ -25,7 +25,7 @@ dayjs.extend(timezone);
 
 const CreateTask = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
-  const [isAlert, setAlert] = useState<IAlertResonse>({
+  const [isAlert, setAlert] = useState<IAlertResponse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",

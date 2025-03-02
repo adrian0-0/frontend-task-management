@@ -1,13 +1,14 @@
 "use client";
 
-import { IAlertResonse, Severity } from "@/interfaces/response";
-import { IFindOneTask } from "@/interfaces/tasks";
+import { IAlertResponse, Severity } from "@/interfaces/response";
+import { IFindOneTask, Status, StatusLabel } from "@/interfaces/tasks";
 import { editTask, findOneTask } from "@/services/tasks";
 import { ArrowBack } from "@mui/icons-material";
 import {
   Alert,
   Box,
   Button,
+  MenuItem,
   Snackbar,
   TextField,
   Typography,
@@ -22,7 +23,7 @@ import * as Yup from "yup";
 const EditTask = () => {
   const [isTask, setTask] = useState<IFindOneTask>();
   const [isOpen, setOpen] = useState<boolean>(false);
-  const [isAlert, setAlert] = useState<IAlertResonse>({
+  const [isAlert, setAlert] = useState<IAlertResponse>({
     statusCode: 200,
     severity: Severity.INFO,
     message: "",
@@ -37,6 +38,9 @@ const EditTask = () => {
 
   const validationSchema = Yup.object({
     title: Yup.string().required("O nome é obrigatório."),
+    status: Yup.mixed<Status>()
+      .oneOf(Object.values(Status))
+      .required("Selecione o status da tarefa"),
     description: Yup.string().optional(),
     createdAt: Yup.date().required("A data de criação é obrigatória"),
     expectedToFinish: Yup.date().required(
@@ -97,158 +101,191 @@ const EditTask = () => {
           <Typography variant="h5" fontWeight={"600"} marginBottom={"1.5rem"}>
             Editar Tarefa
           </Typography>
-          <Formik
-            enableReinitialize
-            initialValues={{
-              title: isTask?.title,
-              description: isTask?.description,
-              createdAt: dayjs(isTask?.createdAt).format("YYYY-MM-DDTHH:mm"),
-              expectedToFinish: dayjs(isTask?.expectedToFinish).format(
-                "YYYY-MM-DDTHH:mm"
-              ),
-              alreadyFinished: dayjs(isTask?.alreadyFinished).isValid()
-                ? dayjs(isTask?.alreadyFinished).format("YYYY-MM-DDTHH:mm")
-                : null,
-            }}
-            validationSchema={validationSchema}
-            onSubmit={async (values) => {
-              await handleService(values);
-            }}
-          >
-            {({ errors, touched, handleChange, handleSubmit }) => (
-              <Form onSubmit={handleSubmit}>
-                <Box display={"flex"} flexWrap={"wrap"} gap={"1.5rem"}>
-                  <TextField
-                    id="title"
-                    name="title"
-                    label="Nome"
-                    placeholder="Nome da tarefa"
-                    defaultValue={isTask?.title}
-                    type="text"
+          {isTask && (
+            <Formik
+              enableReinitialize
+              initialValues={{
+                title: isTask?.title,
+                status: isTask?.status,
+                description: isTask?.description,
+                createdAt: dayjs(isTask?.createdAt).format("YYYY-MM-DDTHH:mm"),
+                expectedToFinish: dayjs(isTask?.expectedToFinish).format(
+                  "YYYY-MM-DDTHH:mm"
+                ),
+                alreadyFinished: dayjs(isTask?.alreadyFinished).isValid()
+                  ? dayjs(isTask?.alreadyFinished).format("YYYY-MM-DDTHH:mm")
+                  : null,
+              }}
+              validationSchema={validationSchema}
+              onSubmit={async (values) => {
+                await handleService(values);
+              }}
+            >
+              {({ errors, touched, handleChange, handleSubmit }) => (
+                <Form onSubmit={handleSubmit}>
+                  <Box display={"flex"} flexWrap={"wrap"} gap={"1.5rem"}>
+                    <TextField
+                      id="title"
+                      name="title"
+                      label="Nome"
+                      placeholder="Nome da tarefa"
+                      defaultValue={isTask?.title}
+                      type="text"
+                      fullWidth
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      helperText={
+                        touched.title && errors.title ? errors.title : null
+                      }
+                      error={touched.title && Boolean(errors.title)}
+                      onChange={handleChange}
+                    />
+                    <TextField
+                      id="status"
+                      select
+                      name="status"
+                      label="Selecione os status"
+                      defaultValue={isTask?.status}
+                      fullWidth
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      helperText={
+                        touched.status && errors.status ? errors.status : null
+                      }
+                      error={touched.status && Boolean(errors.status)}
+                      onChange={handleChange}
+                    >
+                      {Object.values(Status).map((status: any) => (
+                        <MenuItem key={status} value={status}>
+                          {StatusLabel[status as keyof typeof StatusLabel]}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    <TextField
+                      id="description"
+                      name="description"
+                      label="Descrição"
+                      placeholder="Descrição da tarefa"
+                      defaultValue={isTask?.description}
+                      type={"text"}
+                      multiline
+                      rows={4}
+                      fullWidth
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      helperText={
+                        touched.description && errors.description
+                          ? errors.description
+                          : null
+                      }
+                      error={touched.description && Boolean(errors.description)}
+                      onChange={handleChange}
+                    />
+                    <TextField
+                      id="createdAt"
+                      name="createdAt"
+                      label="Data de criação"
+                      defaultValue={
+                        isTask?.createdAt &&
+                        dayjs(isTask?.createdAt).format("YYYY-MM-DDTHH:mm")
+                      }
+                      type={"datetime-local"}
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      fullWidth
+                      helperText={
+                        touched.createdAt && errors.createdAt
+                          ? errors.createdAt
+                          : null
+                      }
+                      error={touched.createdAt && Boolean(errors.createdAt)}
+                      onChange={handleChange}
+                    />
+                    <TextField
+                      id="expectedToFinish"
+                      name="expectedToFinish"
+                      label="Previsão de finalização"
+                      defaultValue={
+                        isTask?.expectedToFinish &&
+                        dayjs(isTask?.expectedToFinish).format(
+                          "YYYY-MM-DDTHH:mm"
+                        )
+                      }
+                      type={"datetime-local"}
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      fullWidth
+                      helperText={
+                        touched.expectedToFinish && errors.expectedToFinish
+                          ? errors.expectedToFinish
+                          : null
+                      }
+                      error={
+                        touched.expectedToFinish &&
+                        Boolean(errors.expectedToFinish)
+                      }
+                      onChange={handleChange}
+                    />
+                    <TextField
+                      id="alreadyFinished"
+                      name="alreadyFinished"
+                      label="Data de conclusão"
+                      defaultValue={
+                        isTask?.alreadyFinished &&
+                        dayjs(isTask?.alreadyFinished).format(
+                          "YYYY-MM-DDTHH:mm"
+                        )
+                      }
+                      type={"datetime-local"}
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      fullWidth
+                      helperText={
+                        touched.alreadyFinished && errors.alreadyFinished
+                          ? errors.alreadyFinished
+                          : null
+                      }
+                      error={
+                        touched.alreadyFinished &&
+                        Boolean(errors.alreadyFinished)
+                      }
+                      onChange={handleChange}
+                    />
+                  </Box>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
                     fullWidth
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
+                    sx={{
+                      marginTop: "2rem",
                     }}
-                    helperText={
-                      touched.title && errors.title ? errors.title : null
-                    }
-                    error={touched.title && Boolean(errors.title)}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    id="description"
-                    name="description"
-                    label="Descrição"
-                    placeholder="Descrição da tarefa"
-                    defaultValue={isTask?.description}
-                    type={"text"}
-                    multiline
-                    rows={4}
-                    fullWidth
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    helperText={
-                      touched.description && errors.description
-                        ? errors.description
-                        : null
-                    }
-                    error={touched.description && Boolean(errors.description)}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    id="createdAt"
-                    name="createdAt"
-                    label="Data de criação"
-                    defaultValue={
-                      isTask?.createdAt &&
-                      dayjs(isTask?.createdAt).format("YYYY-MM-DDTHH:mm")
-                    }
-                    type={"datetime-local"}
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    fullWidth
-                    helperText={
-                      touched.createdAt && errors.createdAt
-                        ? errors.createdAt
-                        : null
-                    }
-                    error={touched.createdAt && Boolean(errors.createdAt)}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    id="expectedToFinish"
-                    name="expectedToFinish"
-                    label="Previsão de finalização"
-                    defaultValue={
-                      isTask?.expectedToFinish &&
-                      dayjs(isTask?.expectedToFinish).format("YYYY-MM-DDTHH:mm")
-                    }
-                    type={"datetime-local"}
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    fullWidth
-                    helperText={
-                      touched.expectedToFinish && errors.expectedToFinish
-                        ? errors.expectedToFinish
-                        : null
-                    }
-                    error={
-                      touched.expectedToFinish &&
-                      Boolean(errors.expectedToFinish)
-                    }
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    id="alreadyFinished"
-                    name="alreadyFinished"
-                    label="Data de conclusão"
-                    defaultValue={
-                      isTask?.alreadyFinished &&
-                      dayjs(isTask?.alreadyFinished).format("YYYY-MM-DDTHH:mm")
-                    }
-                    type={"datetime-local"}
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    fullWidth
-                    helperText={
-                      touched.alreadyFinished && errors.alreadyFinished
-                        ? errors.alreadyFinished
-                        : null
-                    }
-                    error={
-                      touched.alreadyFinished && Boolean(errors.alreadyFinished)
-                    }
-                    onChange={handleChange}
-                  />
-                </Box>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  fullWidth
-                  sx={{
-                    marginTop: "2rem",
-                  }}
-                >
-                  Enviar
-                </Button>
-              </Form>
-            )}
-          </Formik>
+                  >
+                    Enviar
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          )}
+
           <Snackbar
             open={isOpen}
             onClose={handleClose}
