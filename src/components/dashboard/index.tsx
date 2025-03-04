@@ -122,7 +122,6 @@ function userAccount(
           variant="outlined"
           color="error"
           sx={{
-            // opacity: size.width < 300 ? 0 : 1,
             pointerEvents: size.width < 300 ? "none" : "inherit",
             transition: "opacity 0.5s ease-in-out",
             display: size.width < 300 ? "none" : "inherit",
@@ -233,7 +232,11 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
     {
       segment: "tasks",
       title: "Tarefas",
-      icon: <HomeWork />,
+      icon: (
+        <Box component={"span"} id="addTask">
+          <HomeWork />
+        </Box>
+      ),
     },
     {
       segment: "stockpile",

@@ -20,6 +20,11 @@ const Stockpile = () => {
     editName: "editStockpile",
     editLabel: "Editar Inventário",
   };
+  const tableEmpty = {
+    id: "stockpile",
+    name: "Adcionar objeto ao estoque",
+    path: "/stockpile/create",
+  };
 
   const columns = [
     {
@@ -45,10 +50,6 @@ const Stockpile = () => {
         filter: isViewWidth > mobileWidth ? true : false,
         display: isViewWidth > mobileWidth ? true : false,
       },
-    },
-    {
-      name: "quant",
-      label: "Quantidade",
     },
     {
       name: "taskTitle",
@@ -105,6 +106,7 @@ const Stockpile = () => {
       <Box width="100%" height={"100%"} marginTop={"1rem"}>
         <DataTables
           data={isStockpile}
+          tableEmpty={tableEmpty}
           columns={columns}
           content={stockpileContent}
         ></DataTables>

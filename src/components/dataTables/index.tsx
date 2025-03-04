@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
 import {
   Box,
@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 import RealTimeWidthView from "../realTimeWidthView";
 import { useRouter } from "next/navigation";
-import { EditNote } from "@mui/icons-material";
+import { AddHomeWork, EditNote, Groups3, Warehouse } from "@mui/icons-material";
+import { table } from "console";
 
 interface DataTablesProps {
   data: any;
@@ -22,12 +23,34 @@ interface DataTablesProps {
     editLabel: string;
     editName: string;
   };
+  tableEmpty: {
+    id: string;
+    name: string;
+    path: string;
+  };
 }
 
-const DataTables: React.FC<DataTablesProps> = ({ data, columns, content }) => {
+const DataTables: React.FC<DataTablesProps> = ({
+  data,
+  columns,
+  content,
+  tableEmpty,
+}) => {
+  const [isLoading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const { isViewWidth } = RealTimeWidthView();
   const mobileWidth = 600;
+
+  const getIcon = (iconType: string) => {
+    switch (iconType) {
+      case "task":
+        return <AddHomeWork></AddHomeWork>;
+      case "stockpile":
+        return <Warehouse></Warehouse>;
+      case "employee":
+        return <Groups3></Groups3>;
+    }
+  };
 
   const options = {
     responsive: "standard",
@@ -202,24 +225,68 @@ const DataTables: React.FC<DataTablesProps> = ({ data, columns, content }) => {
     ...columns,
   ];
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <Box>
-      <ThemeProvider theme={getMuiTheme()}>
-        <MUIDataTable
-          title={
-            <Typography
-              variant="h5"
-              display={"flex"}
-              justifyContent={{ xs: "center", lg: "left" }}
-            >
-              {content.title}
+      {isLoading ? (
+        <CircularProgress />
+      ) : data.length === 0 ? (
+        <Box>
+          <Box sx={{ marginBottom: "1.5rem" }}>
+            <Typography variant="h6" textAlign="center">
+              Nenhum dado disponível no momento.
             </Typography>
-          }
-          data={data}
-          columns={extendedColumns}
-          options={options}
-        />
-      </ThemeProvider>
+            <Button
+              variant="contained"
+              startIcon={getIcon(tableEmpty.id)}
+              sx={{ marginTop: "1rem" }}
+              onClick={() => router.push(tableEmpty.path)}
+            >
+              {tableEmpty.name}
+            </Button>
+          </Box>
+          <ThemeProvider theme={getMuiTheme()}>
+            <MUIDataTable
+              title={
+                <Typography
+                  variant="h5"
+                  display={"flex"}
+                  justifyContent={{ xs: "center", lg: "left" }}
+                >
+                  {content.title}
+                </Typography>
+              }
+              data={data}
+              columns={extendedColumns}
+              options={options}
+            />
+          </ThemeProvider>
+        </Box>
+      ) : (
+        <ThemeProvider theme={getMuiTheme()}>
+          <MUIDataTable
+            title={
+              <Typography
+                variant="h5"
+                display={"flex"}
+                justifyContent={{ xs: "center", lg: "left" }}
+              >
+                {content.title}
+              </Typography>
+            }
+            data={data}
+            columns={extendedColumns}
+            options={options}
+          />
+        </ThemeProvider>
+      )}
     </Box>
   );
 };

@@ -2,7 +2,6 @@
 
 import {
   IFindAllTasks,
-  Status,
   StatusSeverity,
   StatusLabel,
   IModalTableData,
@@ -13,12 +12,7 @@ import { findAllTasks } from "@/services/tasks";
 import { Box, Button, Chip, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  PendingActions,
-  Groups3,
-  CheckCircle,
-  AddCircle,
-} from "@mui/icons-material";
+import { AddCircle } from "@mui/icons-material";
 import DataTables from "@/components/dataTables";
 import RealTimeWidthView from "@/components/realTimeWidthView";
 import TableModal from "@/components/tableModal/page";
@@ -41,6 +35,11 @@ const Tasks = () => {
     path: "tasks",
     editName: "editTasks",
     editLabel: "Editar",
+  };
+  const tableEmpty = {
+    id: "task",
+    name: "Adcionar Tarefa",
+    path: "/tasks/create",
   };
 
   const handleModal = (
@@ -272,6 +271,7 @@ const Tasks = () => {
           data={isTasks}
           columns={columns}
           content={taskContent}
+          tableEmpty={tableEmpty}
         ></DataTables>
       </Box>
       <TableModal
