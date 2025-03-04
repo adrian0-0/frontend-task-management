@@ -56,6 +56,7 @@ const SignIn = () => {
         router.push("/tasks");
       })
       .catch((err: any) => {
+        console.log(err);
         setAlertResponse({
           message: err.response.data.message,
           statusCode: err.response.data.statusCode,
@@ -78,12 +79,29 @@ const SignIn = () => {
         alignItems: "center",
         flexDirection: "column",
         textAlign: "center",
-        marginX: { xs: "2rem", md: "3rem", lg: "5rem" },
+        marginX: { xs: "1rem", md: "3rem", lg: "5rem" },
       }}
     >
-      <Box width={{ xs: "100%", lg: "50%" }}>
-        <Typography variant="h4" gutterBottom>
-          Olá Mundo!
+      <Box
+        component="img"
+        src="/assets/womam-worker.png"
+        alt="Funcionária"
+        maxWidth={"4rem"}
+      ></Box>
+      <Box
+        sx={{
+          width: { xs: "100%", lg: "50%" },
+          background: "rgba(255, 255, 255, 0.2)",
+          borderRadius: "16px",
+          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+          backdropFilter: "blur(5px)",
+          WebkitBackdropFilter: "blur(5px)",
+          border: "1px solid rgba(255, 255, 255, 0.3)",
+          padding: { xs: "1rem", md: "2rem" },
+        }}
+      >
+        <Typography fontSize={{ xs: "1.5rem", lg: "2rem" }} gutterBottom>
+          Login
         </Typography>
         <Formik
           initialValues={{ email: "", password: "" }}
@@ -135,33 +153,46 @@ const SignIn = () => {
                       onChange={() => setPasswordHidden(!isPasswordHidden)}
                     />
                   }
-                  label="Mostrar Senha"
+                  label="Mostrar senha"
                 />
               </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                fullWidth
+              <Box
                 sx={{
-                  marginTop: "1.5rem",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "1.5rem",
+                  marginTop: "1rem",
                 }}
               >
-                Logar
-              </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => router.push("/auth/signup")}
+                  sx={{ width: "100%" }}
+                >
+                  Ainda não criou sua conta?
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  fullWidth
+                >
+                  Logar
+                </Button>
+              </Box>
             </Form>
           )}
         </Formik>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            severity={isAlertResponse.severity}
-            sx={{ width: "100%" }}
-          >
-            {isAlertResponse.statusCode} - {isAlertResponse.message}
-          </Alert>
-        </Snackbar>
       </Box>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={isAlertResponse.severity}
+          sx={{ width: "100%" }}
+        >
+          {isAlertResponse.statusCode} - {isAlertResponse.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

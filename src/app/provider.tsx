@@ -8,7 +8,7 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
   const [isClient, setClient] = useState<boolean>(false);
 
   const currentPath = usePathname();
-  const excludedPaths = ["/auth/signin", "auth/signup"];
+  const excludedPaths = ["/auth/signin", "/auth/signup"];
   const isExcluded = excludedPaths.includes(currentPath);
 
   useEffect(() => {

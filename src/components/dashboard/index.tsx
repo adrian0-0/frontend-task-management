@@ -85,29 +85,58 @@ function userAccount(
         display={"flex"}
         flexWrap={"wrap"}
         gap={"1rem"}
-        padding={"1rem"}
+        padding={size.width < 300 ? "0rem" : "1rem"}
         alignItems={"center"}
         justifyContent={size.width < 300 ? "center" : "inherit"}
       >
-        <Tooltip title={isUser.name}>
-          <IconButton>
-            <Person
-              sx={{
-                maxWidth: "3rem",
-                fontSize: "2.5rem",
-                borderColor: "inherit",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderRadius: "100%",
-              }}
-            ></Person>
-          </IconButton>
-        </Tooltip>
-
-        <Box display={size.width < 300 ? "none" : "normal"}>
-          <Typography> {isUser.name}</Typography>
-          <Typography>{isUser.email}</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "nowrap",
+            gap: "1rem",
+            alignItems: "center",
+            overflow: "hidden",
+            maxHeight: size.width < 300 ? "80px" : "min-content",
+          }}
+        >
+          <Tooltip title={isUser.name}>
+            <IconButton>
+              <Person
+                sx={{
+                  maxWidth: "3rem",
+                  fontSize: "2.5rem",
+                  borderColor: "inherit",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderRadius: "100%",
+                }}
+              ></Person>
+            </IconButton>
+          </Tooltip>
+          <Box sx={{ overflow: "hidden" }}>
+            <Typography> {isUser.name}</Typography>
+            <Typography>{isUser.email}</Typography>
+          </Box>
         </Box>
+        <Button
+          variant="outlined"
+          color="error"
+          sx={{
+            // opacity: size.width < 300 ? 0 : 1,
+            pointerEvents: size.width < 300 ? "none" : "inherit",
+            transition: "opacity 0.5s ease-in-out",
+            display: size.width < 300 ? "none" : "inherit",
+          }}
+          startIcon={<Logout sx={{ fontSize: "2rem" }}></Logout>}
+          onClick={() => setModalOpen(true)}
+        >
+          Deslogar
+        </Button>
+      </Box>
+      <Box
+        display={size.width > 300 ? "none" : "flex"}
+        sx={{ justifyContent: "center", alignItems: "center" }}
+      >
         <IconButton onClick={() => setModalOpen(true)}>
           <Logout sx={{ fontSize: "2rem" }}></Logout>
         </IconButton>
@@ -243,11 +272,6 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
           icon: <PersonAdd />,
         },
       ],
-    },
-    {
-      segment: "integrations",
-      title: "Integrations",
-      icon: <LayersIcon />,
     },
   ];
 

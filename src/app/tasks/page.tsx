@@ -10,7 +10,7 @@ import {
   getIcon,
 } from "@/interfaces/tasks";
 import { findAllTasks } from "@/services/tasks";
-import { Box, Button, Chip } from "@mui/material";
+import { Box, Button, Chip, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -30,7 +30,8 @@ const Tasks = () => {
   const [isModalContent, setModalContent] = useState<IModalTableContent>({
     editText: "",
     createText: "",
-    path: "",
+    editPath: "",
+    attachPath: "",
   });
   const router = useRouter();
   const mobileWidth = 600;
@@ -86,51 +87,38 @@ const Tasks = () => {
       options: {
         filter: isViewWidth > mobileWidth ? true : false,
         display: isViewWidth > mobileWidth ? true : false,
-        customBodyRender: (value: any, tableMeta: { rowData: any[] }) => {
+        customBodyRender: (
+          value: any,
+          tableMeta: { rowData: any[]; columnIndex: number }
+        ) => {
+          console.log(
+            "Renderizando célula - Value:",
+            value,
+            "RowData:",
+            tableMeta.rowData
+          );
+
           const getColumnIndexByName = (columns: any, name: any) =>
             columns.findIndex((col: any) => col.name === name);
 
-          const stockpileIdIndex =
-            getColumnIndexByName(columns, "stockpileId") + 1;
-          const stockpileId = tableMeta.rowData[stockpileIdIndex];
-          const splitValue = value ? value.split("\n") : [];
-          const splitStockpileId = stockpileId ? stockpileId.split("\n") : [];
-          const modalValue = splitStockpileId.map(
-            (id: string, index: number) => ({
-              id: id,
-              name: splitValue[index],
-            })
-          );
-          const content = {
-            editText: "Editar objeto em estoque",
-            createText: "Adcionar objeto ao estoque",
-            path: "stockpile",
-          };
-          switch (value) {
-            case null:
-              return (
-                <Button
-                  startIcon={<AddCircle></AddCircle>}
-                  variant="text"
-                  onClick={() => {
-                    router.push("/stockpile/create");
-                  }}
-                >
-                  Adcionar
-                </Button>
-              );
-          }
-          return (
-            <Box>
+          const taskIdIndex = getColumnIndexByName(columns, "id") + 1;
+          const taskId = tableMeta.rowData[taskIdIndex];
+
+          if (value === null) {
+            return (
               <Button
-                onClick={() => handleModal(modalValue, content)}
+                startIcon={<AddCircle />}
                 variant="text"
-                sx={{ width: "max-content" }}
+                onClick={() => {
+                  router.push(`tasks/attach/stockpile?id=${taskId}`);
+                }}
               >
-                Ver mais
+                Adicionar
               </Button>
-            </Box>
-          );
+            );
+          }
+
+          return <Box>{value}</Box>;
         },
       },
     },
@@ -160,19 +148,23 @@ const Tasks = () => {
           const employeeIdIndex =
             getColumnIndexByName(columns, "employeeId") + 1;
           const employeeId = tableMeta.rowData[employeeIdIndex];
+          const taskIdIndex = getColumnIndexByName(columns, "id") + 1;
+          const taskId = tableMeta.rowData[taskIdIndex];
           const splitValue = value ? value.split("\n") : [];
           const splitEmployeeId = employeeId ? employeeId.split("\n") : [];
           const modalValue = splitEmployeeId.map(
             (id: string, index: number) => ({
               id: id,
+              taskId,
               name: splitValue[index],
             })
           );
 
           const content = {
-            path: "employee",
             editText: "Editar funcionário",
             createText: "Adcionar funcionário",
+            editPath: "employee/edit",
+            attachPath: "tasks/attach/employee",
           };
 
           switch (value) {
@@ -182,7 +174,7 @@ const Tasks = () => {
                   startIcon={<AddCircle></AddCircle>}
                   variant="text"
                   onClick={() => {
-                    router.push("/employee/create");
+                    router.push(`${content.attachPath}?id=${taskId}`);
                   }}
                 >
                   Adcionar
@@ -268,7 +260,6 @@ const Tasks = () => {
 
   return (
     <Box
-      height={"100vh"}
       display={"flex"}
       justifyContent={"center"}
       alignItems={"center"}
@@ -276,7 +267,7 @@ const Tasks = () => {
       marginX={"1rem"}
       flexWrap={"wrap"}
     >
-      <Box width="100%" height={"100%"} marginTop={"1rem"}>
+      <Box width="100%" height={"100%"} marginBottom={"1rem"}>
         <DataTables
           data={isTasks}
           columns={columns}

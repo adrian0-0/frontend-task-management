@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Form, Formik, FormikHelpers, FormikValues } from "formik";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import * as Yup from "yup";
 
@@ -28,6 +29,7 @@ const SignUp = () => {
     severity: Severity.INFO,
   });
   const [isAlertClose, setAlertClose] = useState<boolean>(false);
+  const router = useRouter();
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -59,11 +61,12 @@ const SignUp = () => {
           severity: Severity.SUCESS,
         });
         setAlertClose(true);
+        router.push("/auth/signin");
       })
       .catch((err) => {
         setAlertResponse({
-          statusCode: err.statusCode,
-          message: err.message,
+          statusCode: err.response.data.statusCode,
+          message: err.response.data.message,
           severity: Severity.ERROR,
         });
         setAlertClose(true);
@@ -84,97 +87,117 @@ const SignUp = () => {
       alignItems={"center"}
       flexDirection={"column"}
     >
-      <Box width={{ xs: "100%", lg: "50%" }}>
-        <Typography variant="h3">Cadastrar Usuário</Typography>
-        <Card>
-          <CardContent>
-            <Formik
-              initialValues={{ name: "", email: "", password: "" }}
-              validationSchema={validationSchema}
-              onSubmit={async (values) => handleService(values)}
-            >
-              {({ errors, touched, handleChange, handleSubmit }) => (
-                <Form>
-                  <Box
-                    display={"flex"}
-                    flexWrap={"wrap"}
-                    gap={{ xs: "0.5rem", lg: "1rem" }}
-                  >
-                    <TextField
-                      type="text"
-                      label="Nome"
-                      id="name"
-                      fullWidth
-                      helperText={
-                        touched.name && errors.name
-                          ? errors.name
-                          : "Por favor, insira seu nome."
-                      }
-                      error={touched.name && Boolean(errors.name)}
-                      onChange={handleChange}
-                    ></TextField>
-                    <TextField
-                      type="email"
-                      label="Email"
-                      id="email"
-                      fullWidth
-                      helperText={
-                        touched.email && errors.email
-                          ? errors.email
-                          : "Por favor, insira seu email."
-                      }
-                      error={touched.email && Boolean(errors.email)}
-                      onChange={handleChange}
-                    ></TextField>
-                    <TextField
-                      type={isPasswordHidden ? "text" : "password"}
-                      label="Senha"
-                      id="password"
-                      fullWidth
-                      helperText={
-                        touched.email && errors.email
-                          ? errors.email
-                          : "Por favor, insira sua senha."
-                      }
-                      error={touched.password && Boolean(errors.password)}
-                      onChange={handleChange}
-                    ></TextField>
-                  </Box>
-                  <Box display={"flex"} width={"100%"}>
-                    <FormControlLabel
-                      label="Mostrar senha"
-                      control={
-                        <Checkbox
-                          onChange={() => setPasswordHidden(!isPasswordHidden)}
-                        ></Checkbox>
-                      }
-                    ></FormControlLabel>
-                  </Box>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ marginTop: "1.5rem" }}
-                  >
-                    Criar Conta
-                  </Button>
-                </Form>
-              )}
-            </Formik>
-          </CardContent>
-        </Card>
-        <Snackbar
-          open={isAlertClose}
-          autoHideDuration={3000}
-          onClose={handleClose}
-          sx={{ width: "100%" }}
+      <Box
+        component="img"
+        src="/assets/womam-worker.png"
+        alt="Funcionária"
+        maxWidth={"4rem"}
+      ></Box>
+      <Box
+        sx={{
+          xs: "100%",
+          lg: "50%",
+          background: "rgba(255, 255, 255, 0.2)",
+          borderRadius: "16px",
+          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+          backdropFilter: "blur(5px)",
+          WebkitBackdropFilter: "blur(5px)",
+          border: "1px solid rgba(255, 255, 255, 0.3)",
+          padding: "2rem",
+        }}
+      >
+        <Typography
+          fontSize={{ xs: "1.5rem", lg: "2rem" }}
+          marginBottom={"1.5rem"}
         >
-          <Alert onClose={handleClose} severity={isAlertResponse.severity}>
-            {isAlertResponse.statusCode} - {isAlertResponse.message}
-          </Alert>
-        </Snackbar>
+          Cadastrar Usuário
+        </Typography>
+
+        <Formik
+          initialValues={{ name: "", email: "", password: "" }}
+          validationSchema={validationSchema}
+          onSubmit={async (values) => handleService(values)}
+        >
+          {({ errors, touched, handleChange, handleSubmit }) => (
+            <Form>
+              <Box
+                display={"flex"}
+                flexWrap={"wrap"}
+                gap={{ xs: "0.5rem", lg: "1rem" }}
+              >
+                <TextField
+                  type="text"
+                  label="Nome"
+                  id="name"
+                  fullWidth
+                  helperText={
+                    touched.name && errors.name
+                      ? errors.name
+                      : "Por favor, insira seu nome."
+                  }
+                  error={touched.name && Boolean(errors.name)}
+                  onChange={handleChange}
+                ></TextField>
+                <TextField
+                  type="email"
+                  label="Email"
+                  id="email"
+                  fullWidth
+                  helperText={
+                    touched.email && errors.email
+                      ? errors.email
+                      : "Por favor, insira seu email."
+                  }
+                  error={touched.email && Boolean(errors.email)}
+                  onChange={handleChange}
+                ></TextField>
+                <TextField
+                  type={isPasswordHidden ? "text" : "password"}
+                  label="Senha"
+                  id="password"
+                  fullWidth
+                  helperText={
+                    touched.email && errors.email
+                      ? errors.email
+                      : "Por favor, insira sua senha."
+                  }
+                  error={touched.password && Boolean(errors.password)}
+                  onChange={handleChange}
+                ></TextField>
+              </Box>
+              <Box display={"flex"} width={"100%"}>
+                <FormControlLabel
+                  label="Mostrar senha"
+                  control={
+                    <Checkbox
+                      onChange={() => setPasswordHidden(!isPasswordHidden)}
+                    ></Checkbox>
+                  }
+                ></FormControlLabel>
+              </Box>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ marginTop: "1.5rem" }}
+              >
+                Criar Conta
+              </Button>
+            </Form>
+          )}
+        </Formik>
       </Box>
+      <Snackbar
+        open={isAlertClose}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        sx={{ width: "100%" }}
+      >
+        <Alert onClose={handleClose} severity={isAlertResponse.severity}>
+          {isAlertResponse.statusCode} - {isAlertResponse.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

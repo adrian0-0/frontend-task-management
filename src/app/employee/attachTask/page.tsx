@@ -61,7 +61,6 @@ const AttachTask = () => {
         setOpen(true);
       })
       .catch((err: any) => {
-        console.log(err);
         setAlert({
           message: err.response.data.message,
           severity: Severity.ERROR,
