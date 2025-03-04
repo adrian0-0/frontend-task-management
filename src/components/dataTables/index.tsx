@@ -204,26 +204,22 @@ const DataTables: React.FC<DataTablesProps> = ({ data, columns, content }) => {
 
   return (
     <Box>
-      {data.length > 0 ? (
-        <ThemeProvider theme={getMuiTheme()}>
-          <MUIDataTable
-            title={
-              <Typography
-                variant="h5"
-                display={"flex"}
-                justifyContent={{ xs: "center", lg: "left" }}
-              >
-                {content.title}
-              </Typography>
-            }
-            data={data}
-            columns={extendedColumns}
-            options={options}
-          />
-        </ThemeProvider>
-      ) : (
-        <CircularProgress />
-      )}
+      <ThemeProvider theme={getMuiTheme()}>
+        <MUIDataTable
+          title={
+            <Typography
+              variant="h5"
+              display={"flex"}
+              justifyContent={{ xs: "center", lg: "left" }}
+            >
+              {content.title}
+            </Typography>
+          }
+          data={data}
+          columns={extendedColumns}
+          options={options}
+        />
+      </ThemeProvider>
     </Box>
   );
 };

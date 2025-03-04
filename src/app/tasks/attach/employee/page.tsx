@@ -74,7 +74,6 @@ const AttachEmployee = () => {
         setOpen(true);
       })
       .catch((err: any) => {
-        console.log(err);
         setAlert({
           message: err.response.data.message,
           severity: Severity.ERROR,
@@ -142,7 +141,7 @@ const AttachEmployee = () => {
           {({ values, errors, touched, handleChange, handleSubmit }) => (
             <Form onSubmit={handleSubmit}>
               <TextField
-                label="Funcionário"
+                label="Tarefa"
                 slotProps={{ inputLabel: { shrink: true } }}
                 value={isTask?.title || ""}
                 disabled

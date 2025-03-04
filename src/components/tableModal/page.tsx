@@ -53,7 +53,7 @@ const TableModal: React.FC<Modal> = ({ isOpen, setOpen, data, content }) => {
                   variant="contained"
                   fullWidth
                   onClick={() => {
-                    router.push(`/${content.path}/${data.id}`);
+                    router.push(`/${content.editPath}?id=${data.id}`);
                     setOpen(false);
                   }}
                 >
@@ -67,7 +67,9 @@ const TableModal: React.FC<Modal> = ({ isOpen, setOpen, data, content }) => {
           <Button
             variant="contained"
             startIcon={<AddCircle sx={{ fontSize: "2rem" }} />}
-            onClick={() => router.push(`/${content.path}/create`)}
+            onClick={() =>
+              router.push(`/${content.attachPath}?id=${data[0].taskId}`)
+            }
           >
             Adicionar
           </Button>

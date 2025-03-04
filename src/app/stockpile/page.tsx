@@ -95,7 +95,6 @@ const Stockpile = () => {
 
   return (
     <Box
-      height={"100vh"}
       display={"flex"}
       justifyContent={"center"}
       alignItems={"center"}

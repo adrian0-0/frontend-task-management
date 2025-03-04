@@ -43,13 +43,15 @@ export interface IEditTask {
 
 export interface IModalTableData {
   id: string;
+  taskId: string;
   name: string;
 }
 
 export interface IModalTableContent {
   editText: string;
   createText: string;
-  path: string;
+  editPath: string;
+  attachPath: string;
 }
 
 export enum Status {

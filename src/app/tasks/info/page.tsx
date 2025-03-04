@@ -62,7 +62,6 @@ export default function Page() {
   const removeStockpilefromTask = async () => {
     editStockpile(isTask?.stockpileId ?? "", { taskId: null })
       .then((response: any) => {
-        console.log(response);
         setAlert({
           message: "Objeto em estoque removido da tarefa",
           severity: Severity.SUCESS,
@@ -83,7 +82,6 @@ export default function Page() {
   const removeEmployee = (employeeId: string) => {
     removeEmployeesFromTask(id, employeeId)
       .then((response: any) => {
-        console.log(response);
         setAlert({
           message: "Encarregado removido da tarefa com sucesso",
           severity: Severity.SUCESS,
@@ -127,13 +125,10 @@ export default function Page() {
 
   useEffect(() => {
     findOneTask(id).then((response: any) => {
+      console.log(response.data);
       setTask(response.data);
     });
   }, [id]);
-
-  useEffect(() => {
-    console.log(isTask);
-  }, [isTask]);
 
   return (
     <Box
