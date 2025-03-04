@@ -19,6 +19,11 @@ const Employee = () => {
     editName: "editEmployee",
     editLabel: "Editar funcionário",
   };
+  const tableEmpty = {
+    id: "employee",
+    name: "Adcionar Funcionário",
+    path: "/employee/create",
+  };
 
   const columns = [
     {
@@ -89,6 +94,7 @@ const Employee = () => {
       <Box width="100%" height={"100%"} marginTop={"1rem"}>
         <DataTables
           data={isEmployee}
+          tableEmpty={tableEmpty}
           columns={columns}
           content={employeeContent}
         ></DataTables>
