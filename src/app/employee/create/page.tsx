@@ -1,14 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import {
   Alert,
   Box,
   Button,
-  FormControl,
-  FormHelperText,
-  Input,
-  InputLabel,
   Snackbar,
   TextField,
   Typography,
@@ -21,7 +17,7 @@ import { IAlertResponse, Severity } from "@/interfaces/response";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
-const employeeCreate = () => {
+const EmployeeCreate = () => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isAlert, setAlert] = useState<IAlertResponse>({
     statusCode: 200,
@@ -236,4 +232,4 @@ const employeeCreate = () => {
   );
 };
 
-export default employeeCreate;
+export default EmployeeCreate;

@@ -56,7 +56,7 @@ function headerTitle() {
   );
 }
 
-function userAccount(
+function UserAccount(
   isUser: IUser,
   isModalOpen: boolean,
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
@@ -298,7 +298,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
         slots={{
           appTitle: headerTitle,
           sidebarFooter: () =>
-            userAccount(isUser, isModalOpen, setModalOpen, router),
+            UserAccount(isUser, isModalOpen, setModalOpen, router),
         }}
       >
         <PageContainer
