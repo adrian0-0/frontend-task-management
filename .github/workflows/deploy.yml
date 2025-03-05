@@ -1,21 +1,29 @@
+name: Deploy to EC2 via SSH
+
 on:
   push:
     branches:
-      - main
+      - main  # Altere para a branch que deseja monitorar
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the files
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Deploy to AWS EC2
-      - uses: appleboy/scp-action@master
-        with:
-          host: ${{secrets.EC2_REMOTE_HOST}}
-          username: ${{secrets.EC2_REMOTE_USER}}
-          key: ${{secrets.EC2_SSH_PRIVATE_KEY}}
-          source: "./"
-          target: ${{secrets.EC2_TARGET_DIR}}
+      - name: Setup SSH Key
+        run: |
+          # Nota: A chave pública correspondente já está presente em ~/.ssh/authorized_keys no EC2.
+          # Configure a chave privada no runner:
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          # Adiciona a chave do host à lista de hosts conhecidos para evitar prompt
+          ssh-keyscan -H "${{ secrets.EC2_REMOTE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ${{ secrets.EC2_REMOTE_USER }}@${{ secrets.EC2_REMOTE_HOST }} "mkdir -p ${{ secrets.EC2_TARGET_DIR }}"
+          rsync -avz --delete ./ ${{ secrets.EC2_REMOTE_USER }}@${{ secrets.EC2_REMOTE_HOST }}:${{ secrets.EC2_TARGET_DIR }}
