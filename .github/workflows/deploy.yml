@@ -1,6 +1,7 @@
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -10,7 +11,7 @@ jobs:
       - name: Checkout the files
       - uses: actions/checkout@v3
 
-      - name: Deploy to AWS EC
+      - name: Deploy to AWS EC2
       - uses: appleboy/scp-action@master
         with:
           host: ${{secrets.EC2_REMOTE_HOST}}
