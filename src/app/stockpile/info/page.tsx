@@ -138,9 +138,12 @@ const StockpileInfo = () => {
           </Button>
           <Button
             startIcon={<Delete></Delete>}
+            sx={{
+              display: isStockpile?.taskId ? "none" : "inherit",
+              width: "max-content",
+            }}
             variant="outlined"
             color="error"
-            sx={{ width: "max-content" }}
             onClick={() => setModalOpen(true)}
           >
             Deletar Objeto Estocado
