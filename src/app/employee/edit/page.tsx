@@ -34,7 +34,6 @@ const EditEmployee = () => {
     message: "",
   });
   const [isEmployee, setEmployee] = useState<IFindOneEmployee>();
-  const [isPhoneValue, setPhoneValue] = useState<string>();
   const validationSchema = Yup.object({
     name: Yup.string().required("Nome é obrigatório"),
     role: Yup.string().required("Cargo é obrigatório"),
@@ -101,7 +100,6 @@ const EditEmployee = () => {
   useEffect(() => {
     findOneEmployee(id).then((response: any) => {
       setEmployee(response.data);
-      setPhoneValue(response.data.phone);
     });
   }, [id]);
 
@@ -133,7 +131,7 @@ const EditEmployee = () => {
               name: isEmployee?.name,
               role: isEmployee?.role,
               email: isEmployee?.email,
-              phone: isPhoneValue,
+              phone: isEmployee?.phone,
             }}
             validationSchema={validationSchema}
             onSubmit={async (values) => {
@@ -206,7 +204,7 @@ const EditEmployee = () => {
                     name="phone"
                     label="Número de celular"
                     placeholder="+55 (99) 99999-9999"
-                    defaultValue={isPhoneValue}
+                    defaultValue={isEmployee?.phone}
                     fullWidth
                     onChange={handleChange}
                     helperText={

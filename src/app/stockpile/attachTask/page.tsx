@@ -116,7 +116,7 @@ const AttachTask = () => {
         >
           Retornar
         </Button>
-        <Typography variant="h5">Anexar objeto a tarefa</Typography>
+        <Typography variant="h5">Anexar tarefa ao objeto</Typography>
         <Formik
           initialValues={{
             taskId: "",
@@ -144,7 +144,7 @@ const AttachTask = () => {
                   id="demo-multiple-chip-label"
                   sx={{ whiteSpace: "nowrap", overflow: "visible" }}
                 >
-                  Anexar objeto
+                  Anexar tarefa
                 </InputLabel>
                 <Select
                   name="taskId"

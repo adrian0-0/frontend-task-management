@@ -119,7 +119,7 @@ const EmployeeCreate = () => {
               await handleService(values);
             }}
           >
-            {({ errors, touched, handleChange, handleSubmit }) => (
+            {({ values, errors, touched, handleChange, handleSubmit }) => (
               <Form onSubmit={handleSubmit}>
                 <Box display={"flex"} flexWrap={"wrap"} gap={"1.5rem"}>
                   <TextField
@@ -196,6 +196,7 @@ const EmployeeCreate = () => {
                         shrink: true,
                       },
                     }}
+                    value={values.phone}
                   />
                 </Box>
                 <Button
