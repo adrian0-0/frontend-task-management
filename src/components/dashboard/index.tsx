@@ -28,6 +28,7 @@ import {
   Paper,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { findUser } from "@/services/user";
 import { IUser } from "@/interfaces/user";
@@ -35,6 +36,11 @@ import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 function headerTitle() {
+  const viewtheme = useTheme();
+  const {
+    palette: { mode: isTheme },
+  } = viewtheme;
+
   return (
     <Box
       display={"flex"}
@@ -48,7 +54,11 @@ function headerTitle() {
       <Typography fontWeight={"600"}>Task Management</Typography>
       <Box
         component={"img"}
-        src="/task-management.png"
+        src={
+          isTheme === "dark"
+            ? "/white-taskmanagement.png"
+            : "/taskmanagement.png"
+        }
         alt="Gerenciador de Tarefas"
         maxWidth={"24px"}
       />
@@ -205,9 +215,6 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
   });
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isPath, setPath] = useState<string>("");
-  const expandMenuButton = document.querySelector('[aria-label="Expand menu"]');
-  const isMenuExpanded = expandMenuButton !== null;
-  const [isSidebarCollapsed, setSidebarCollapsed] = useState(isMenuExpanded);
   const router = useRouter();
 
   const theme = extendTheme({
