@@ -34,37 +34,7 @@ import { findUser } from "@/services/user";
 import { IUser } from "@/interfaces/user";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-function headerTitle() {
-  const viewtheme = useTheme();
-  const {
-    palette: { mode: isTheme },
-  } = viewtheme;
-
-  return (
-    <Box
-      display={"flex"}
-      alignItems={"center"}
-      justifyContent={"center"}
-      width={"100%"}
-      flexWrap={"wrap"}
-      gap={"0.5rem"}
-      marginLeft={"1rem"}
-    >
-      <Typography fontWeight={"600"}>Task Management</Typography>
-      <Box
-        component={"img"}
-        src={
-          isTheme === "dark"
-            ? "/white-taskmanagement.png"
-            : "/taskmanagement.png"
-        }
-        alt="Gerenciador de Tarefas"
-        maxWidth={"24px"}
-      />
-    </Box>
-  );
-}
+import HeaderDashboard from "../headerDashboard";
 
 function UserAccount(
   isUser: IUser,
@@ -303,7 +273,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
         navigation={NAVIGATION}
         theme={theme}
         slots={{
-          appTitle: headerTitle,
+          appTitle: HeaderDashboard,
           sidebarFooter: () =>
             UserAccount(isUser, isModalOpen, setModalOpen, router),
         }}
