@@ -1,3 +1,4 @@
+import "dotenv/config";
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
@@ -6,7 +7,7 @@ import axios, {
 } from "axios";
 
 const instance = axios.create({
-  baseURL: "https://api-taskmanagement.adrianvinicius.com",
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
 });
 
 /**
