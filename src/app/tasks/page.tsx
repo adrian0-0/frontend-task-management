@@ -90,13 +90,6 @@ const Tasks = () => {
           value: any,
           tableMeta: { rowData: any[]; columnIndex: number }
         ) => {
-          console.log(
-            "Renderizando célula - Value:",
-            value,
-            "RowData:",
-            tableMeta.rowData
-          );
-
           const getColumnIndexByName = (columns: any, name: any) =>
             columns.findIndex((col: any) => col.name === name);
 

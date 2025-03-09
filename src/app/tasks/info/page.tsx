@@ -125,7 +125,6 @@ export default function Page() {
 
   useEffect(() => {
     findOneTask(id).then((response: any) => {
-      console.log(response.data);
       setTask(response.data);
     });
   }, [id]);
