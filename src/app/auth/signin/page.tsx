@@ -56,7 +56,6 @@ const SignIn = () => {
         router.push("/tasks");
       })
       .catch((err: any) => {
-        console.log(err);
         setAlertResponse({
           message: err.response.data.message,
           statusCode: err.response.data.statusCode,
