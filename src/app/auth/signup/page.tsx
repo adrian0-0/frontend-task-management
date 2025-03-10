@@ -120,11 +120,7 @@ const SignUp = () => {
         >
           {({ errors, touched, handleChange, handleSubmit }) => (
             <Form>
-              <Box
-                display={"flex"}
-                flexWrap={"wrap"}
-                gap={{ xs: "0.5rem", lg: "1rem" }}
-              >
+              <Box display={"flex"} flexWrap={"wrap"} gap={"1rem"}>
                 <TextField
                   type="text"
                   label="Nome"

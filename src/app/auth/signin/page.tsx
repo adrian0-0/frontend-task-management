@@ -110,11 +110,7 @@ const SignIn = () => {
         >
           {({ errors, touched, handleChange, handleSubmit }) => (
             <Form onSubmit={handleSubmit}>
-              <Box
-                display={"flex"}
-                flexWrap={"wrap"}
-                gap={{ xs: "0.5rem", lg: "1rem" }}
-              >
+              <Box display={"flex"} flexWrap={"wrap"} gap={"1rem"}>
                 <TextField
                   id="email"
                   name="email"
