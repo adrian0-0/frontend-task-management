@@ -164,7 +164,7 @@ const CreateStockpile = () => {
                     marginTop: "2rem",
                   }}
                 >
-                  Enviar
+                  Salvar
                 </Button>
               </Form>
             )}

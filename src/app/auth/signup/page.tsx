@@ -45,10 +45,10 @@ const SignUp = () => {
     password: Yup.string()
       .min(8, "A senha deve ter pelo menos 8 caracteres.")
       .max(40, "Sua senha é muita longa.")
-      .matches(
-        /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
-        "Sua senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial e não conter espaços em branco."
-      )
+      .matches(/[A-Z]/, "Pelo menos uma letra maiúscula")
+      .matches(/[a-z]/, "Pelo menos uma letra minúscula")
+      .matches(/[0-9]/, "Pelo menos um número")
+      .matches(/[?=.*\W+]/, "Pelo menos um caractere especial")
       .required("A senha é obrigatória."),
   });
 
@@ -130,11 +130,7 @@ const SignUp = () => {
                   label="Nome"
                   id="name"
                   fullWidth
-                  helperText={
-                    touched.name && errors.name
-                      ? errors.name
-                      : "Por favor, insira seu nome."
-                  }
+                  helperText={touched.name && errors.name ? errors.name : null}
                   error={touched.name && Boolean(errors.name)}
                   onChange={handleChange}
                 ></TextField>
@@ -144,9 +140,7 @@ const SignUp = () => {
                   id="email"
                   fullWidth
                   helperText={
-                    touched.email && errors.email
-                      ? errors.email
-                      : "Por favor, insira seu email."
+                    touched.email && errors.email ? errors.email : null
                   }
                   error={touched.email && Boolean(errors.email)}
                   onChange={handleChange}
@@ -157,9 +151,7 @@ const SignUp = () => {
                   id="password"
                   fullWidth
                   helperText={
-                    touched.email && errors.email
-                      ? errors.email
-                      : "Por favor, insira sua senha."
+                    touched.email && errors.email ? errors.email : null
                   }
                   error={touched.password && Boolean(errors.password)}
                   onChange={handleChange}

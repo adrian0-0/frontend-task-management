@@ -186,7 +186,7 @@ const AttachEmployee = () => {
                 fullWidth
                 sx={{ marginTop: "2rem" }}
               >
-                Enviar
+                Salvar
               </Button>
             </Form>
           )}
