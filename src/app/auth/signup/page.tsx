@@ -151,7 +151,7 @@ const SignUp = () => {
                   id="password"
                   fullWidth
                   helperText={
-                    touched.email && errors.email ? errors.email : null
+                    touched.password && errors.password ? errors.password : null
                   }
                   error={touched.password && Boolean(errors.password)}
                   onChange={handleChange}
