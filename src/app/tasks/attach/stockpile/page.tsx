@@ -175,7 +175,7 @@ const AttachStockpile = () => {
                 fullWidth
                 sx={{ marginTop: "2rem" }}
               >
-                Enviar
+                Salvar
               </Button>
             </Form>
           )}

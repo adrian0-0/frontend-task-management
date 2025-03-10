@@ -208,7 +208,7 @@ const EmployeeCreate = () => {
                     marginTop: "2rem",
                   }}
                 >
-                  Enviar
+                  Salvar
                 </Button>
               </Form>
             )}

@@ -198,7 +198,7 @@ const CreateTask = () => {
                     marginTop: "2rem",
                   }}
                 >
-                  Enviar
+                  Salvar
                 </Button>
               </Form>
             )}

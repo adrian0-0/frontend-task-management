@@ -36,10 +36,10 @@ const SignIn = () => {
     password: Yup.string()
       .min(8, "A senha deve ter pelo menos 8 caracteres.")
       .max(40, "Sua senha é muita longa.")
-      .matches(
-        /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
-        "Sua senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial. Além disso, não deve conter espaços em branco."
-      )
+      .matches(/[A-Z]/, "Pelo menos uma letra maiúscula")
+      .matches(/[a-z]/, "Pelo menos uma letra minúscula")
+      .matches(/[0-9]/, "Pelo menos um número")
+      .matches(/[?=.*\W+]/, "Pelo menos um caractere especial")
       .required("A senha é obrigatória."),
   });
 
@@ -122,9 +122,7 @@ const SignIn = () => {
                   type="email"
                   fullWidth
                   helperText={
-                    touched.email && errors.email
-                      ? errors.email
-                      : "Por favor, insira seu email."
+                    touched.email && errors.email ? errors.email : null
                   }
                   error={touched.email && Boolean(errors.email)}
                   onChange={handleChange}
@@ -136,9 +134,7 @@ const SignIn = () => {
                   type={isPasswordHidden ? "text" : "password"}
                   fullWidth
                   helperText={
-                    touched.password && errors.password
-                      ? errors.password
-                      : "Por favor, insira sua senha."
+                    touched.password && errors.password ? errors.password : null
                   }
                   error={touched.password && Boolean(errors.password)}
                   onChange={handleChange}
